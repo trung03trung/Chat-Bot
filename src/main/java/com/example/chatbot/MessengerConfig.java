@@ -2,11 +2,16 @@ package com.example.chatbot;
 
 
 import com.github.messenger4j.Messenger;
+import org.alicebot.ab.Bot;
+import org.alicebot.ab.configuration.BotConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Configuration
 @PropertySource(value = { "classpath:application.properties" })
@@ -31,8 +36,22 @@ public class MessengerConfig {
 
     @Bean
     public Messenger messenger() {
-        System.out.print(pageAccessToken);
         return Messenger.create(pageAccessToken, appSecret, verifyToken);
+    }
+
+
+    @Bean
+    public Bot alice() {
+        return new Bot(BotConfiguration.builder()
+                .name("alice")
+                .path("src/main/resources")
+                .build()
+        );
+    }
+
+    @Bean
+    public ScheduledExecutorService executorService() {
+        return Executors.newScheduledThreadPool(2);
     }
 
 }

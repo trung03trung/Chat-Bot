@@ -29,9 +29,12 @@ public class WebhookController {
 
     private final Messenger messenger;
 
+    private final ChatBotService chatBotService;
+
     @Autowired
-    public WebhookController(final Messenger messenger) {
+    public WebhookController(final Messenger messenger,  ChatBotService chatBotService) {
         this.messenger = messenger;
+        this.chatBotService = chatBotService;
     }
 
     @GetMapping
@@ -49,6 +52,8 @@ public class WebhookController {
 
     @PostMapping
     public ResponseEntity<Void> handleCallback(@RequestBody final String payload, @RequestHeader(SIGNATURE_HEADER_NAME) final String signature) throws MessengerVerificationException {
+        logger.info("payload", payload);
+        logger.info("signature", signature);
         this.messenger.onReceiveEvents(payload, of(signature), event -> {
             if (event.isTextMessageEvent()) {
                 try {
@@ -72,7 +77,7 @@ public class WebhookController {
 
     private void handleTextMessageEvent(TextMessageEvent event) throws MessengerApiException, MessengerIOException {
         final String senderId = event.senderId();
-        sendTextMessageUser(senderId, "Vip123");
+        sendTextMessageUser(senderId, event.text());
 
     }
 
