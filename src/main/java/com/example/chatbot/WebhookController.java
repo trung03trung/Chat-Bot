@@ -72,7 +72,7 @@ public class WebhookController {
 
     private void handleTextMessageEvent(TextMessageEvent event) throws MessengerApiException, MessengerIOException {
         final String senderId = event.senderId();
-        sendTextMessageUser(senderId, "Hello");
+        sendTextMessageUser(senderId, "Vip123");
 
     }
 
