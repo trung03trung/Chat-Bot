@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "messenger4j.pageAccessToken",
+      "type": "java.lang.String",
+      "description": "Description for messenger4j.pageAccessToken."
+  }
+] }
