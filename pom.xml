@@ -21,7 +21,7 @@
         <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
         <repository>
             <id>JCenter</id>
-            <url>https://jcenter.bintray.com</url>
+            <url>http://jcenter.bintray.com</url>
         </repository>
     </repositories>
     <dependencies>
