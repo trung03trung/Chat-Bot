@@ -29,7 +29,6 @@ public class MessengerConfig {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-
     @Bean
     public Messenger messenger() {
         System.out.print(pageAccessToken);
