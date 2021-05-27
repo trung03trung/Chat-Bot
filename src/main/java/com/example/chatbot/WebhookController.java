@@ -29,9 +29,9 @@ public class WebhookController {
 
     private final Messenger messenger;
 
+    @Autowired
     private final ChatBotService chatBotService;
 
-    @Autowired
     public WebhookController(final Messenger messenger,  ChatBotService chatBotService) {
         this.messenger = messenger;
         this.chatBotService = chatBotService;

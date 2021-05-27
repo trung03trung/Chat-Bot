@@ -16,7 +16,6 @@ public class ChatBotService {
 
     private Chat chatSession;
 
-    @Autowired
     public ChatBotService(Bot alice, ScheduledExecutorService executorService) {
         this.executorService = executorService;
         chatSession = new Chat(alice);
