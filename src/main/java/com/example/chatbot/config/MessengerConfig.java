@@ -1,4 +1,4 @@
-package com.example.chatbot;
+package com.example.chatbot.config;
 
 
 import com.github.messenger4j.Messenger;
