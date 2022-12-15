@@ -8,7 +8,7 @@ public class AnswerUser {
 
     private Integer age;
 
-    private String sex;
+    private Integer sex;
 
     private float weight;
 

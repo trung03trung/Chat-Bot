@@ -4,7 +4,7 @@ public class Constant {
     public static class Question {
         public static final String STAGE = "Bạn đang trong giai đoạn nào?";
         public static final String AGE = "Bạn bao nhiêu tuổi?";
-        public static final String SEX = "Giới tính của bạn là gì?";
+        public static final String SEX = "Giới tính của bạn là gì? (0: nữ , 1: nam)";
         public static final String WEIGHT = "Cân năng của bạn là bao nhiêu (kg)?";
         public static final String HEIGHT = "Chiều cao của bạn là bao nhiêu (cm)?";
         public static final String EXERCISE_INTENSITY = "Bạn thường tập luyện với cường độ như thế nào?";

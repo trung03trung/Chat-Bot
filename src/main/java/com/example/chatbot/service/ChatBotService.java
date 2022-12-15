@@ -3,6 +3,7 @@ package com.example.chatbot.service;
 import com.example.chatbot.constant.Constant;
 import com.example.chatbot.dto.AnswerUser;
 import com.example.chatbot.dto.BmiRequest;
+import com.example.chatbot.dto.ResponseBmi;
 import com.example.chatbot.model.*;
 import com.example.chatbot.repository.*;
 import com.fasterxml.jackson.core.JsonParser;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alicebot.ab.Bot;
 import org.alicebot.ab.Chat;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -86,10 +88,10 @@ public class ChatBotService {
             if (Constant.Command.READY.equals(response)) {
                 init();
                 questionPre = questions.pop();
-                return Constant.Command.WELCOME + "+/n" + questionPre;
+                return Constant.Command.WELCOME + "\n" + questionPre;
             }
             return Constant.Command.START;
-        } else if (flap == 0 && !questions.isEmpty()) {
+        } else if (flap == 0) {
             switch (questionPre) {
                 case Constant.Question.STAGE:
                     answerUser.setStage(response);
@@ -98,7 +100,7 @@ public class ChatBotService {
                     answerUser.setAge(Integer.parseInt(response));
                     break;
                 case Constant.Question.SEX:
-                    answerUser.setSex(response);
+                    answerUser.setSex(Integer.parseInt(response));
                     break;
                 case Constant.Question.WEIGHT:
                     answerUser.setWeight(Float.parseFloat(response));
@@ -118,14 +120,14 @@ public class ChatBotService {
                 default:
                     break;
             }
-            if (questions.size() == 1) {
-                flap = 1;
+            if (questions.size() == 0) {
+                flap = -1;
+                return handleInput();
             }
+            questionPre = questions.peek();
             return questions.pop();
-        } else {
-            flap = -1;
-            return handleInput();
         }
+        return "";
     }
 
     private String handleInput() {
@@ -135,30 +137,33 @@ public class ChatBotService {
         Bmi bmi = bmiRepository.findByValue(getBmi(new BmiRequest(answerUser.getSex(), answerUser.getAge(), answerUser.getWeight(), answerUser.getHeight())));
         ExerciseIntensity exerciseIntensity = exerciseIntensityRepository.findByDescriptionContaining(answerUser.getExerciseIntensity());
         Habit habit = habitRepository.findByDescriptionContaining(answerUser.getHabit());
+        if( habit == null){
+            habit = habitRepository.findById(Long.valueOf(4)).get();
+        }
         OtherSport otherSport = otherSportRepository.findByDescriptionContaining(answerUser.getSport());
         List<CaseBase> caseBaseList = (List<CaseBase>) caseBaseRepository.findAll();
         for (CaseBase cb : caseBaseList) {
             float valueStage = (6 * similarWeightsRepository.findByNameAndCaseFromIdAndCaseToId(Constant.NameElement.STAGE,
                     stage.getId(), cb.getStageId()).getValue());
             float valueBmi = (4 * similarWeightsRepository.findByNameAndCaseFromIdAndCaseToId(Constant.NameElement.BMI,
-                    bmi.getId(), cb.getStageId()).getValue());
+                    bmi.getId(), cb.getBmiId()).getValue());
             float valueExi = (2 * similarWeightsRepository.findByNameAndCaseFromIdAndCaseToId(Constant.NameElement.EXI,
-                    exerciseIntensity.getId(), cb.getStageId()).getValue());
+                    exerciseIntensity.getId(), cb.getExerciseId()).getValue());
             float valueHabit = (1 * similarWeightsRepository.findByNameAndCaseFromIdAndCaseToId(Constant.NameElement.HABIT,
-                    habit.getId(), cb.getStageId()).getValue());
+                    habit.getId(), cb.getHabitId()).getValue());
             float valueSport = (1 * similarWeightsRepository.findByNameAndCaseFromIdAndCaseToId(Constant.NameElement.SPORT,
-                    otherSport.getId(), cb.getStageId()).getValue());
+                    otherSport.getId(), cb.getOtherSportId()).getValue());
             float sum = (valueStage + valueBmi + valueExi + valueHabit + valueSport) / 14;
             if (sum > maxCb) {
                 maxCb = sum;
                 caseBase = cb;
             }
         }
-        return caseBase.getNutrition();
+        return caseBase.getNutrition() + '\n' + "Cảm ơn bạn đã tham gia tư vấn!" ;
     }
 
 
-    private Float getBmi(BmiRequest bmi) {
+    public Float getBmi(BmiRequest bmi) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://127.0.0.1:5000/bmi-perdic";
         Map<String, Object> body = new HashMap<>();
@@ -169,8 +174,11 @@ public class ChatBotService {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        HttpEntity<String> request = new HttpEntity<>(jsonRequest, null);
-        return restTemplate.postForObject(url, request, Float.class);
+        assert jsonRequest != null;
+        HttpHeaders httpHeaders = new HttpHeaders();
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, httpHeaders);
+        Map<String, String> result = restTemplate.postForObject(url, request, HashMap.class);
+        return Float.valueOf(result.get("result"));
     }
 
 

@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class BmiRequest {
 
-    private String sex;
+    private Integer sex;
 
     private int age;
 
