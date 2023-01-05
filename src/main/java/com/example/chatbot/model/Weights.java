@@ -7,17 +7,22 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "habit")
+@Table(name = "weights")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Habit {
+public class Weights {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "code", nullable = false)
-    private String code;
-
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "feature_id", nullable = false)
+    private Long featureId;
+
+    @Column(name = "feature_compare_id", nullable = false)
+    private Long featureCompareId;
+
+    private Float value;
 }

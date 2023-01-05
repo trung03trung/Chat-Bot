@@ -7,9 +7,9 @@ import javax.persistence.*;
 
 @Data
 @Entity
-@Table(name = "habit")
+@Table(name = "pain_area")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Habit {
+public class PainArea {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)

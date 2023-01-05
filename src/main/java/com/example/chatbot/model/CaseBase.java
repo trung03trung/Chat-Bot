@@ -1,32 +1,51 @@
 package com.example.chatbot.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Data
 @Entity
+@Table(name = "case_base")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseBase {
     @Id
+    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long stageId;
+    private String name;
 
-    private Long bmiId;
+    @ManyToOne()
+    @JoinColumn(name="condition_id")
+    private Condition condition;
 
-    private Long habitId;
+    @ManyToOne()
+    @JoinColumn(name="foot_symptoms_id")
+    private FootSymptoms footSymptoms;
 
-    private Long exerciseId;
+    @ManyToOne()
+    @JoinColumn(name="knee_symptoms_id")
+    private KneeSymptoms kneeSymptoms;
 
-    private Long otherSportId;
+    @ManyToOne()
+    @JoinColumn(name="habit_id")
+    private Habit habit;
 
-    private String nutrition;
+    @ManyToOne()
+    @JoinColumn(name="medical_record_id")
+    private MedicalRecord medicalRecord;
+
+    @ManyToOne()
+    @JoinColumn(name="pain_area_id")
+    private PainArea painArea;
+
+    private Long sex;
+
+    private String treatment;
 
     @Override
     public boolean equals(Object o) {

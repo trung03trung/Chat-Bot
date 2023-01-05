@@ -2,29 +2,32 @@ package com.example.chatbot.constant;
 
 public class Constant {
     public static class Question {
-        public static final String STAGE = "Bạn đang trong giai đoạn nào?";
-        public static final String AGE = "Bạn bao nhiêu tuổi?";
+        public static final String PAIN_AREA = "Bạn bị đau ở đâu(Vùng khớp gối,Vùng đùi,...)?";
+        public static final String KNEE_SYMPTOMS = "Các triệu chứng vùng đùi,khớp gối của bạn như thế nào?";
+        public static final String FOOT_SYMPTOMS = "Các triệu chứng vùng cẳng chân dọc xuống bàn chân của bạn như thế nào?";
         public static final String SEX = "Giới tính của bạn là gì? (0: nữ , 1: nam)";
-        public static final String WEIGHT = "Cân năng của bạn là bao nhiêu (kg)?";
-        public static final String HEIGHT = "Chiều cao của bạn là bao nhiêu (cm)?";
-        public static final String EXERCISE_INTENSITY = "Bạn thường tập luyện với cường độ như thế nào?";
-        public static final String HABIT = "Thói quen trong tập luyện của bạn thường là gì?";
-        public static final String SPORT = "Ngoài tập luyện thể hình bạn còn chơi môn thể thao nào khác không?";
+        public static final String MEDICAL_RECORD = "Bạn từng có tiểu sử bệnh án gì không?Nếu có hãy kể các tên bệnh?";
+        public static final String HABIT = "Bạn có thói quen sinh hoạt tập luyện như thế nào?";
+        public static final String CONDITION = "Bạn hãy cho biết thể trạng/tình trạng sức khỏe hiện tại của bạn ?";
         public static final String TKS = "Cảm ơn bạn đã tham gia buổi tư vấn của chúng tôi ngày hôm nay";
+        public static final String OVER = "Bot không thể đưa ra lời khuyên cho bạn hãy liên hệ với bác sĩ để được tư vấn, thông tin quy khách cung cấp sẽ được cập nhật trong tương lai!";
+        public static final String WRONG_ANSWER = "Câu trả lời của bạn không đúng vui lòng nhập lại!!!";
     }
 
     public static class Command {
-        public static final String WELCOME = "Chào mừng bạn đến buổi tư vấn hôm nay vui lòng trả lời những câu hỏi sau để chuyên gia có chế độ hợp lý cho bạn";
-        public static final String START = "Để bắt đầu với buổi tư vấn hãy gõ sẵn sàng";
-        public static final String READY = "sẵn sàng";
+        public static final String WELCOME = "Chào mừng bạn đến buổi tư vấn y học thể thao về bộ môn điền kinh hôm nay vui lòng trả lời những câu hỏi sau để chuyên gia có chuẩn đoán đúng cho bạn";
+        public static final String START = "Để bắt đầu với buổi tư vấn hãy gõ bắt đầu";
+        public static final String READY = "bắt đầu";
     }
 
     public static class NameElement {
-        public static final String STAGE = "STAGE";
-        public static final String BMI = "BMI";
-        public static final String EXI = "EXI";
+        public static final String CONDITION = "CONDITION";
+        public static final String PAIN_AREA = "PAIN_AREA";
+        public static final String KNEE_SYMPTOMS = "KNEE_SYMPTOMS";
+        public static final String FOOT_SYMPTOMS = "FOOT_SYMPTOMS";
+        public static final String  MEDICAL_RECORD = "MEDICAL_RECORD";
         public static final String HABIT = "HABIT";
-        public static final String SPORT = "SPORT";
+        public static final String SEX = "SEX";
     }
 
 

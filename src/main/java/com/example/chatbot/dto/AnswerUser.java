@@ -4,20 +4,18 @@ import lombok.Data;
 
 @Data
 public class AnswerUser {
-    private String stage;
+    private String painArea;
 
-    private Integer age;
+    private Long sex;
 
-    private Integer sex;
+    private String kneeSymptoms;
 
-    private float weight;
+    private String footSymptoms;
 
-    private Integer height;
-
-    private String exerciseIntensity;
+    private String condition;
 
     private String habit;
 
-    private String sport;
+    private String medicalRecord;
 
 }

@@ -2,43 +2,33 @@ package com.example.chatbot.service;
 
 import com.example.chatbot.constant.Constant;
 import com.example.chatbot.dto.AnswerUser;
-import com.example.chatbot.dto.BmiRequest;
-import com.example.chatbot.dto.ResponseBmi;
 import com.example.chatbot.model.*;
 import com.example.chatbot.repository.*;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.alicebot.ab.Bot;
-import org.alicebot.ab.Chat;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 @Service
 public class ChatBotService {
 
-    private final Chat chatSession;
 
-    private final StageRepository stageRepository;
+    private final ConditionRepository conditionRepository;
 
-    private final BmiRepository bmiRepository;
+    private final FootSymptomsRepository footSymptomsRepository;
 
     private final CaseBaseRepository caseBaseRepository;
 
-    private final ExerciseIntensityRepository exerciseIntensityRepository;
+    private final KneeSymptomsRepository kneeSymptomsRepository;
 
     private final HabitRepository habitRepository;
 
-    private final OtherSportRepository otherSportRepository;
+    private final MedicalRecordRepository medicalRecordRepository;
 
-    private final SimilarWeightsRepository similarWeightsRepository;
+    private final PainAreaRepository painAreaRepository;
+    private final WeightsRepository weightsRepository;
 
     private String questionPre = "";
 
@@ -48,18 +38,15 @@ public class ChatBotService {
 
     private Integer flap = -1;
 
-    public ChatBotService(Bot alice, StageRepository stageRepository, BmiRepository bmiRepository,
-                          CaseBaseRepository caseBaseRepository, ExerciseIntensityRepository exerciseIntensityRepository,
-                          HabitRepository habitRepository, OtherSportRepository otherSportRepository,
-                          SimilarWeightsRepository similarWeightsRepository) {
-        chatSession = new Chat(alice);
-        this.stageRepository = stageRepository;
-        this.bmiRepository = bmiRepository;
+    public ChatBotService(ConditionRepository conditionRepository, FootSymptomsRepository footSymptomsRepository, CaseBaseRepository caseBaseRepository, KneeSymptomsRepository kneeSymptomsRepository, HabitRepository habitRepository, MedicalRecordRepository medicalRecordRepository, PainAreaRepository painAreaRepository, WeightsRepository weightsRepository) {
+        this.conditionRepository = conditionRepository;
+        this.footSymptomsRepository = footSymptomsRepository;
         this.caseBaseRepository = caseBaseRepository;
-        this.exerciseIntensityRepository = exerciseIntensityRepository;
+        this.kneeSymptomsRepository = kneeSymptomsRepository;
         this.habitRepository = habitRepository;
-        this.otherSportRepository = otherSportRepository;
-        this.similarWeightsRepository = similarWeightsRepository;
+        this.medicalRecordRepository = medicalRecordRepository;
+        this.painAreaRepository = painAreaRepository;
+        this.weightsRepository = weightsRepository;
     }
 
     //    public String sendMessage(String text) {
@@ -69,14 +56,13 @@ public class ChatBotService {
 //    }
     private void init() {
         questions = new Stack<>();
-        questions.push(Constant.Question.SPORT);
-        questions.push(Constant.Question.HABIT);
-        questions.push(Constant.Question.EXERCISE_INTENSITY);
-        questions.push(Constant.Question.HEIGHT);
-        questions.push(Constant.Question.WEIGHT);
         questions.push(Constant.Question.SEX);
-        questions.push(Constant.Question.AGE);
-        questions.push(Constant.Question.STAGE);
+        questions.push(Constant.Question.PAIN_AREA);
+        questions.push(Constant.Question.HABIT);
+        questions.push(Constant.Question.CONDITION);
+        questions.push(Constant.Question.KNEE_SYMPTOMS);
+        questions.push(Constant.Question.FOOT_SYMPTOMS);
+        questions.push(Constant.Question.MEDICAL_RECORD);
         flap = 0;
         questionPre = "";
         answerUser = new AnswerUser();
@@ -93,29 +79,26 @@ public class ChatBotService {
             return Constant.Command.START;
         } else if (flap == 0) {
             switch (questionPre) {
-                case Constant.Question.STAGE:
-                    answerUser.setStage(response);
-                    break;
-                case Constant.Question.AGE:
-                    answerUser.setAge(Integer.parseInt(response));
-                    break;
                 case Constant.Question.SEX:
-                    answerUser.setSex(Integer.parseInt(response));
+                    answerUser.setSex(Long.parseLong(response));
                     break;
-                case Constant.Question.WEIGHT:
-                    answerUser.setWeight(Float.parseFloat(response));
-                    break;
-                case Constant.Question.HEIGHT:
-                    answerUser.setHeight(Integer.parseInt(response));
-                    break;
-                case Constant.Question.EXERCISE_INTENSITY:
-                    answerUser.setExerciseIntensity(response);
+                case Constant.Question.PAIN_AREA:
+                    answerUser.setPainArea(response);
                     break;
                 case Constant.Question.HABIT:
                     answerUser.setHabit(response);
                     break;
-                case Constant.Question.SPORT:
-                    answerUser.setSport(response);
+                case Constant.Question.CONDITION:
+                    answerUser.setCondition((response));
+                    break;
+                case Constant.Question.KNEE_SYMPTOMS:
+                    answerUser.setKneeSymptoms(response);
+                    break;
+                case Constant.Question.FOOT_SYMPTOMS:
+                    answerUser.setFootSymptoms(response);
+                    break;
+                case Constant.Question.MEDICAL_RECORD:
+                    answerUser.setMedicalRecord(response);
                     break;
                 default:
                     break;
@@ -132,55 +115,85 @@ public class ChatBotService {
 
     private String handleInput() {
         float maxCb = 0;
+        int countError = 0;
         CaseBase caseBase = new CaseBase();
-        Stage stage = stageRepository.findByDescriptionContaining(answerUser.getStage());
-        Bmi bmi = bmiRepository.findByValue(getBmi(new BmiRequest(answerUser.getSex(), answerUser.getAge(), answerUser.getWeight(), answerUser.getHeight())));
-        ExerciseIntensity exerciseIntensity = exerciseIntensityRepository.findByDescriptionContaining(answerUser.getExerciseIntensity());
-        Habit habit = habitRepository.findByDescriptionContaining(answerUser.getHabit());
-        if( habit == null){
-            habit = habitRepository.findById(Long.valueOf(4)).get();
-        }
-        OtherSport otherSport = otherSportRepository.findByDescriptionContaining(answerUser.getSport());
+        PainArea painArea = painAreaRepository.findByNameContaining(answerUser.getPainArea());
+        if (painArea == null)
+            countError += 1;
+        Habit habit = habitRepository.findByNameContaining(answerUser.getHabit());
+        if (habit == null)
+            countError += 1;
+        Condition condition = conditionRepository.findConditionByNameContaining(answerUser.getCondition());
+        if (condition == null)
+            countError += 1;
+        FootSymptoms footSymptoms = footSymptomsRepository.findByNameContaining(answerUser.getFootSymptoms());
+        if (footSymptoms == null)
+            countError += 1;
+        KneeSymptoms kneeSymptoms = kneeSymptomsRepository.findByNameContaining(answerUser.getKneeSymptoms());
+        if (kneeSymptoms == null)
+            countError += 1;
+        MedicalRecord medicalRecord = medicalRecordRepository.findByNameContaining(answerUser.getMedicalRecord());
+        if (medicalRecord == null)
+            countError += 1;
+        if (answerUser.getSex() != 1 && answerUser.getSex() != 0)
+            countError += 1;
+        if (countError >= 3)
+            return Constant.Question.WRONG_ANSWER;
         List<CaseBase> caseBaseList = (List<CaseBase>) caseBaseRepository.findAll();
         for (CaseBase cb : caseBaseList) {
-            float valueStage = (6 * similarWeightsRepository.findByNameAndCaseFromIdAndCaseToId(Constant.NameElement.STAGE,
-                    stage.getId(), cb.getStageId()).getValue());
-            float valueBmi = (4 * similarWeightsRepository.findByNameAndCaseFromIdAndCaseToId(Constant.NameElement.BMI,
-                    bmi.getId(), cb.getBmiId()).getValue());
-            float valueExi = (2 * similarWeightsRepository.findByNameAndCaseFromIdAndCaseToId(Constant.NameElement.EXI,
-                    exerciseIntensity.getId(), cb.getExerciseId()).getValue());
-            float valueHabit = (1 * similarWeightsRepository.findByNameAndCaseFromIdAndCaseToId(Constant.NameElement.HABIT,
-                    habit.getId(), cb.getHabitId()).getValue());
-            float valueSport = (1 * similarWeightsRepository.findByNameAndCaseFromIdAndCaseToId(Constant.NameElement.SPORT,
-                    otherSport.getId(), cb.getOtherSportId()).getValue());
-            float sum = (valueStage + valueBmi + valueExi + valueHabit + valueSport) / 14;
+            float valuePA;
+            if (painArea == null)
+                valuePA = 0;
+            else
+                valuePA = (6 * weightsRepository.findByNameAndFeatureIdAndFeatureCompareId(Constant.NameElement.PAIN_AREA,
+                        painArea.getId(), cb.getPainArea().getId()).getValue());
+            float valueHabit;
+            if(habit == null)
+                valueHabit=0;
+            else
+                valueHabit = (4 * weightsRepository.findByNameAndFeatureIdAndFeatureCompareId(Constant.NameElement.HABIT,
+                    habit.getId(), cb.getHabit().getId()).getValue());
+            float valueFS;
+            if(footSymptoms == null)
+                valueFS = 0;
+            else
+                valueFS = (3 * weightsRepository.findByNameAndFeatureIdAndFeatureCompareId(Constant.NameElement.FOOT_SYMPTOMS,
+                    footSymptoms.getId(), cb.getFootSymptoms().getId()).getValue());
+            float valueKS;
+            if(kneeSymptoms == null)
+                valueKS = 0;
+            else
+                valueKS = (3 * weightsRepository.findByNameAndFeatureIdAndFeatureCompareId(Constant.NameElement.KNEE_SYMPTOMS,
+                    kneeSymptoms.getId(), cb.getKneeSymptoms().getId()).getValue());
+            float valueCondition;
+            if(condition == null)
+                valueCondition = 0;
+            else
+                valueCondition = (2 * weightsRepository.findByNameAndFeatureIdAndFeatureCompareId(Constant.NameElement.CONDITION,
+                    condition.getId(), cb.getCondition().getId()).getValue());
+            float valueSex;
+            if (cb.getSex() == 2)
+                valueSex = 2;
+            else
+                valueSex = (2 * weightsRepository.findByNameAndFeatureIdAndFeatureCompareId(Constant.NameElement.SEX,
+                        answerUser.getSex(), cb.getSex()).getValue());
+            float valueMR;
+            if(medicalRecord == null)
+                valueMR = 0;
+            else
+                valueMR = (2 * weightsRepository.findByNameAndFeatureIdAndFeatureCompareId(Constant.NameElement.MEDICAL_RECORD,
+                    medicalRecord.getId(), cb.getMedicalRecord().getId()).getValue());
+            float sum = (valuePA + valueFS + valueHabit + valueKS + valueSex + valueCondition + valueMR) / 22;
             if (sum > maxCb) {
                 maxCb = sum;
                 caseBase = cb;
             }
         }
-        return caseBase.getNutrition() + '\n' + "Cảm ơn bạn đã tham gia tư vấn!" ;
+        if (maxCb > 0.7)
+            return "Theo bot chuẩn đoán bạn đã bị " + caseBase.getName() + '\n' + "Các phương pháp điều trị sau: " + '\n' + caseBase.getTreatment() + '\n' + "Cảm ơn bạn đã tham gia tư vấn!";
+        else
+            return Constant.Question.OVER;
     }
-
-
-    public Float getBmi(BmiRequest bmi) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "http://127.0.0.1:5000/bmi-perdic";
-        Map<String, Object> body = new HashMap<>();
-        body.put("bmi", bmi);
-        String jsonRequest = null;
-        try {
-            jsonRequest = mapper.writeValueAsString(body);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        assert jsonRequest != null;
-        HttpHeaders httpHeaders = new HttpHeaders();
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, httpHeaders);
-        Map<String, String> result = restTemplate.postForObject(url, request, HashMap.class);
-        return Float.valueOf(result.get("result"));
-    }
-
 
     private final ObjectMapper mapper = new ObjectMapper().configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 

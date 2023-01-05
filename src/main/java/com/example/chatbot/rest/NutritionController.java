@@ -11,7 +11,7 @@ import javax.websocket.server.PathParam;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/nutrition")
+@RequestMapping("/heath-care")
 public class NutritionController {
 
     private final ChatBotService chatBotService;
@@ -25,10 +25,5 @@ public class NutritionController {
         String reply = chatBotService.sendMessage(message);
         ResponseView responseView = new ResponseView(reply);
         return ResponseEntity.status(HttpStatus.OK).body(responseView);
-    }
-
-    @PostMapping("/bmi")
-    public ResponseEntity<Float> handleCustomMessage(@RequestBody BmiRequest bmiRequest) {
-        return ResponseEntity.status(HttpStatus.OK).body(chatBotService.getBmi(bmiRequest));
     }
 }
