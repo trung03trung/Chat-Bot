@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HabitRepository extends PagingAndSortingRepository<Habit,Long> {
-    Habit findByNameContaining(String name);
+    Habit findFirstByNameContaining(String name);
 }

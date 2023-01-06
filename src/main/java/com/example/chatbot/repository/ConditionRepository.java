@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ConditionRepository extends PagingAndSortingRepository<Condition,Long> {
-    Condition findConditionByNameContaining(String name);
+    Condition findFirstByNameContaining(String name);
 }

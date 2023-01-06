@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FootSymptomsRepository extends PagingAndSortingRepository<FootSymptoms,Long> {
-    FootSymptoms findByNameContaining(String name);
+    FootSymptoms findFirstByNameContaining(String name);
 }

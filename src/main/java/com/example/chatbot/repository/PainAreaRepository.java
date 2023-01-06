@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PainAreaRepository extends PagingAndSortingRepository<PainArea,Long> {
-    PainArea findByNameContaining(String name);
+    PainArea findFirstByNameContaining(String name);
 }

@@ -1,6 +1,5 @@
 package com.example.chatbot.rest;
 
-import com.example.chatbot.dto.BmiRequest;
 import com.example.chatbot.dto.ResponseView;
 import com.example.chatbot.service.ChatBotService;
 import org.springframework.http.HttpStatus;
@@ -12,18 +11,17 @@ import javax.websocket.server.PathParam;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/heath-care")
-public class NutritionController {
+public class ChatbotController {
 
     private final ChatBotService chatBotService;
 
-    public NutritionController(ChatBotService chatBotService) {
+    public ChatbotController(ChatBotService chatBotService) {
         this.chatBotService = chatBotService;
     }
 
     @GetMapping("/reply")
     public ResponseEntity<ResponseView> handleCustomMessage(@PathParam("message") String message) {
-        String reply = chatBotService.sendMessage(message);
-        ResponseView responseView = new ResponseView(reply);
+        ResponseView responseView = chatBotService.sendMessage(message);
         return ResponseEntity.status(HttpStatus.OK).body(responseView);
     }
 }

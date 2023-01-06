@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MedicalRecordRepository extends PagingAndSortingRepository<MedicalRecord,Long> {
-    MedicalRecord findByNameContaining(String name);
+    MedicalRecord findFirstByNameContaining(String name);
 }

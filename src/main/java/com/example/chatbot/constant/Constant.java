@@ -5,8 +5,9 @@ public class Constant {
         public static final String PAIN_AREA = "Bạn bị đau ở đâu(Vùng khớp gối,Vùng đùi,...)?";
         public static final String KNEE_SYMPTOMS = "Các triệu chứng vùng đùi,khớp gối của bạn như thế nào?";
         public static final String FOOT_SYMPTOMS = "Các triệu chứng vùng cẳng chân dọc xuống bàn chân của bạn như thế nào?";
-        public static final String SEX = "Giới tính của bạn là gì? (0: nữ , 1: nam)";
-        public static final String MEDICAL_RECORD = "Bạn từng có tiểu sử bệnh án gì không?Nếu có hãy kể các tên bệnh?";
+        public static final String SEX = "Giới tính của bạn là gì(0: Nữ,1: Nam)?";
+        public static final String MEDICAL_RECORD_YN = "Bạn từng có tiểu sử bệnh án gì không?";
+        public static final String MEDICAL_RECORD = "Đó là những bệnh gì?";
         public static final String HABIT = "Bạn có thói quen sinh hoạt tập luyện như thế nào?";
         public static final String CONDITION = "Bạn hãy cho biết thể trạng/tình trạng sức khỏe hiện tại của bạn ?";
         public static final String TKS = "Cảm ơn bạn đã tham gia buổi tư vấn của chúng tôi ngày hôm nay";
@@ -15,7 +16,7 @@ public class Constant {
     }
 
     public static class Command {
-        public static final String WELCOME = "Chào mừng bạn đến buổi tư vấn y học thể thao về bộ môn điền kinh hôm nay vui lòng trả lời những câu hỏi sau để chuyên gia có chuẩn đoán đúng cho bạn";
+        public static final String WELCOME = "Chào mừng bạn đến buổi tư vấn y học thể thao về bộ môn điền kinh hôm nay vui lòng trả lời những câu hỏi sau để chuyên gia có chuẩn đoán đúng cho bạn.";
         public static final String START = "Để bắt đầu với buổi tư vấn hãy gõ bắt đầu";
         public static final String READY = "bắt đầu";
     }
