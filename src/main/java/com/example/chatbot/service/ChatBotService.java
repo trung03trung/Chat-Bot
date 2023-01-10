@@ -87,25 +87,33 @@ public class ChatBotService {
                     answerUser.setSex(Long.parseLong(response));
                     break;
                 case Constant.Question.PAIN_AREA:
-                    PainArea painArea=painAreaRepository.findFirstByNameContaining(response);
-                    if(painArea == null) {
-                        questionPre = Constant.Question.PAIN_AREA;
-                        responseView.setReply(Constant.Question.WRONG_ANSWER);
-                        return responseView;
-                    }
-                    else if(painArea.getId() == 1 || painArea.getId() == 2){
+                    if(response.contains("và") || response.contains(",")){
+                        String[] words =response.split("\\s*và\\s*|\\s*,\\s*");
                         answerUser.setPainArea(response);
-                        questionPre = Constant.Question.KNEE_SYMPTOMS;
-                        questions.remove(Constant.Question.FOOT_SYMPTOMS);
-                        answerUser.setFootSymptoms("Bình thường");
-                        break;
+                        PainArea painArea1 = painAreaRepository.findFirstByNameContaining(words[0]);
+                        PainArea painArea2 = painAreaRepository.findFirstByNameContaining(words[1]);
+                        if(Math.abs(painArea1.getId() - painArea2.getId())>=2 || painArea1.getId()==3 && painArea2.getId()==2 || painArea1.getId()==2 && painArea1.getId()==3)
+                            break;
                     }
                     else {
-                        answerUser.setPainArea(response);
-                        questionPre = Constant.Question.FOOT_SYMPTOMS;
-                        questions.remove(Constant.Question.KNEE_SYMPTOMS);
-                        answerUser.setKneeSymptoms("Bình thường");
-                        break;
+                        PainArea painArea = painAreaRepository.findFirstByNameContaining(response);
+                        if (painArea == null) {
+                            questionPre = Constant.Question.PAIN_AREA;
+                            responseView.setReply(Constant.Question.WRONG_ANSWER);
+                            return responseView;
+                        } else if (painArea.getId() == 1 || painArea.getId() == 2) {
+                            answerUser.setPainArea(response);
+                            questionPre = Constant.Question.KNEE_SYMPTOMS;
+                            questions.remove(Constant.Question.FOOT_SYMPTOMS);
+                            answerUser.setFootSymptoms("Bình thường");
+                            break;
+                        } else {
+                            answerUser.setPainArea(response);
+                            questionPre = Constant.Question.FOOT_SYMPTOMS;
+                            questions.remove(Constant.Question.KNEE_SYMPTOMS);
+                            answerUser.setKneeSymptoms("Bình thường");
+                            break;
+                        }
                     }
                 case Constant.Question.HABIT:
                     if(response.contains("không biết") || response.contains("không rõ")){
@@ -280,7 +288,5 @@ public class ChatBotService {
         else
             return Constant.Question.OVER;
     }
-
-    private final ObjectMapper mapper = new ObjectMapper().configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 
 }
